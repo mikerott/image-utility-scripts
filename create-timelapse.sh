@@ -71,6 +71,8 @@ function fisheye() {
         # Data from http://lensfun.sourceforge.net/, instructions from http://www.imagemagick.org/Usage/lens/#scratch,
         # k1 parameter in the lensfun database goes into 'b' param, according to: http://www.imagemagick.org/discourse-server/viewtopic.php?t=28592#p127010
         nice -19 convert ${line} -distort barrel "0 -0.03111 0" -quality 80 ${filename}.barrel.png
+        # but that doesn't seem to be working, so maybe I need to measure it like the "Data from" line above.
+        # Also probably helpful:  http://m43photo.blogspot.de/2014/07/olympus-9mm-fisheye-vs-rectilinear.html
     done
     echo "Done."
 }
