@@ -43,8 +43,8 @@ function scaled_timelapse() {
     resolution_height="$4"
     nice -19 mencoder -nosound -ovc lavc -lavcopts \
         vcodec=mpeg4:mbd=2:trell:autoaspect:vqscale=3 \
-        -vf scale=$resolution_width:$resolution_height -mf type=jpeg:fps=$framerate \
-        mf://*.jpg -o $filename.mp4
+        -vf scale=$resolution_width:$resolution_height -mf type=png:fps=$framerate \
+        mf://*.png -o $filename.mp4
 }
 
 function timelapse() {
@@ -65,8 +65,8 @@ function timelapse() {
     filename="$2"
     nice -19 mencoder -nosound -ovc lavc -lavcopts \
         vcodec=msmpeg4v2 \
-        -mf type=jpeg:fps=$framerate \
-        mf://*.jpg -o $filename.mp4
+        -mf type=png:fps=$framerate \
+        mf://*.png -o $filename.mp4
 }
 
 function superview() {
@@ -81,8 +81,10 @@ function superview() {
 
 function fisheye() {
     command -v mogrify >/dev/null 2>&1 || { echo >&2 "'mogrify' is not installed; aborting."; exit 1; }
-
-    mogrify -distort barrel "0 0 -0.3" *.jpg
+    # Olympus 8mm body cap lens on Pen E-PL5
+    # Data from http://lensfun.sourceforge.net/, instructions from http://www.imagemagick.org/Usage/lens/#scratch,
+    # k1 parameter in the lensfun database goes into 'b' param, according to: http://www.imagemagick.org/discourse-server/viewtopic.php?t=28592#p127010
+    mogrify -distort barrel "0 -0.03111 0" *.png
 }
 
 function convert(){
@@ -99,13 +101,13 @@ function resize() {
     command -v nice >/dev/null 2>&1 || { echo >&2 "'nice' is not installed; aborting."; exit 1; }
     command -v convert >/dev/null 2>&1 || { echo >&2 "'convert' is not installed; aborting."; exit 1; }
 
-    list=`ls *.jpg`
+    list=`ls *.png`
     for line in ${list}
     do
   	    filename=`echo ${line} | cut -f1 -d'.'`
   	    # widescreen:  example starting with 1600x1200, crop to bottom 800px scale to 720 height, preserving aspect
-  	    nice -19 convert ${line} -crop 1600x900+0+0 -scale x720 -unsharp 0.3x2+1.5 -quality 80 ${filename}_tovid.jpg
-  	    #convert ${line} -scale x720 -unsharp 0.3x2+1.5 -quality 80 ${filename}_tovid.jpg
+  	    nice -19 convert ${line} -crop 1600x900+0+0 -scale x720 -unsharp 0.3x2+1.5 -quality 80 ${filename}_tovid.png
+  	    #convert ${line} -scale x720 -unsharp 0.3x2+1.5 -quality 80 ${filename}_tovid.png
     done
 }
 
@@ -121,24 +123,24 @@ function help() {
     printf "Usage:\n"
     printf "\n"
     printf "$me timelapse [fps] [outfilename]\n"
-    printf "Makes a timelapse with all images (*.jpg) in the current folder.\n"
+    printf "Makes a timelapse with all images (*.png) in the current folder.\n"
     printf "Example: $me timelapse 30 timelapse.mp4\n"
     printf "\n"
     printf "$me scaled_timelapse [fps] [outfilename] [res width] [res height]\n"
-    printf "Makes a timelapse with all images (*.jpg) in the current folder.\n"
+    printf "Makes a timelapse with all images (*.png) in the current folder.\n"
     printf "Example: $me timelapse 30 scaledtimelapse.mp4 1920 1080\n"
     printf "\n"
     printf "$me superview\n"
     printf "Applies SuperView to all videos (*.mp4) in the current dir\n"
     printf "\n"
     printf "$me fisheye\n"
-    printf "Fixes barrel distortion to all images (*.jpg) in the current folder\n"
+    printf "Fixes barrel distortion to all images (*.png) in the current folder\n"
     printf "\n"
     printf "$me convert\n"
     printf "Converts all MP4 (*.mp4) videos to MPEG4 MOV videos for easy editing\n"
     printf "\n"
     printf "$me resize\n"
-    printf "Crops, resizes, and sharpens all images (*.jpg) in the current folder to the hard-coded values, copying the output to new file suffixed with _tovid\n"
+    printf "Crops, resizes, and sharpens all images (*.png) in the current folder to the hard-coded values, copying the output to new file suffixed with _tovid\n"
     printf "\n"
     printf "$me trim [input video] [output video] [HH:MM:SS start] [HH:MM:SS stop]\n"
     printf "Trims a video, use this to trim a slow motion video!\n"
