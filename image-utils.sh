@@ -68,11 +68,10 @@ function fisheye() {
         echo "Fixing distortion on $line."
         filename=`echo ${line} | rev | cut -f 2- -d'.' | rev`
         # Olympus 8mm body cap lens on Pen E-PL5
-        # Data from http://lensfun.sourceforge.net/, instructions from http://www.imagemagick.org/Usage/lens/#scratch,
-        # k1 parameter in the lensfun database goes into 'b' param, according to: http://www.imagemagick.org/discourse-server/viewtopic.php?t=28592#p127010
-        nice -19 convert ${line} -distort barrel "0 -0.03111 0" -quality 80 ${filename}.barrel.png
-        # but that doesn't seem to be working, so maybe I need to measure it like the "Data from" line above.
+        # I used instructions from http://www.imagemagick.org/Usage/lens/#scratch to get these numbers:
+        nice -19 convert ${line} -distort barrel "-0.025 -0.036 -0.066" -quality 80 ${filename}.barrel.png
         # Also probably helpful:  http://m43photo.blogspot.de/2014/07/olympus-9mm-fisheye-vs-rectilinear.html
+        # Also probably helpful:  http://hugin.sourceforge.net/docs/manual/Lens_correction_model.html
     done
     echo "Done."
 }
